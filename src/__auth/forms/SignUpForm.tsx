@@ -25,6 +25,7 @@ const SignUpForm = () => {
   })
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof SignUpValidation>) {
+    //create a user
      console.log(values)
   }
   return (
