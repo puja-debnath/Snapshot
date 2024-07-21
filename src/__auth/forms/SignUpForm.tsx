@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
-import {Form,FormControl,FormDescription,FormField,FormItem,FormLabel,FormMessage,} from "@/components/ui/form"
+import {Form,FormControl,FormField,FormItem,FormLabel,FormMessage,} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { SignUpValidation } from "@/lib/validation"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -8,12 +8,14 @@ import { useForm } from "react-hook-form"
 import { Loader } from "lucide-react"
 import { Link } from "react-router-dom"
 import { createUserAccount } from "@/lib/appwrite/api"
+import { useToast } from "@/components/ui/use-toast"
 
 
 
 
 const SignUpForm = () => {
-     const  isLoading = false
+  const { toast } = useToast()
+  const  isLoading = false
 
 //define your form 
   const form = useForm<z.infer<typeof SignUpValidation>>({
@@ -25,12 +27,16 @@ const SignUpForm = () => {
       password:""
     },
   })
+   
+
   // 2. Define a submit handler.
  async function onSubmit(values: z.infer<typeof SignUpValidation>) {
     //create a user
      const newUser = await createUserAccount(values)
-     console.log(newUser)
-
+    if(!newUser){
+       return toast({ title: "sign up failed , please try again. "})
+    }
+ 
   }
   return (
       <Form {...form}>
@@ -47,7 +53,7 @@ const SignUpForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} 
       className="flex flex-col gap-3 w-full mt-4  ">
 
-        <FormField
+      <FormField
           control={form.control}
           name="username"
           render={({ field }) => (
@@ -60,9 +66,7 @@ const SignUpForm = () => {
             </FormItem>   
           )}
         />
-
-
-     <FormField
+       <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
@@ -88,8 +92,7 @@ const SignUpForm = () => {
               </FormItem>
             )}
           />
-
-<FormField
+       <FormField
           control={form.control}
           name="password"
           render={({ field }) => (
@@ -102,10 +105,13 @@ const SignUpForm = () => {
             </FormItem>   
           )}
         />
-        <Button type="submit" className="shad-button_primary">
+        <Button type="submit" className="shad-button_primary"
+        >
           {isLoading?( <div className="flex-center gap-2">
-           <Loader /> Loading...
+           <Loader /> Loading... 
           </div>): "Sign-up"}
+
+          
         </Button>
       </form>
 
